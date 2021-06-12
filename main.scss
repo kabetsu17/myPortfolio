@@ -6,13 +6,14 @@
  html {
    font-size: 62.5%;
    font-size: 100%;
+   box-sizing: border-box;
  }
  body {
    line-height: 1.4;
  }
-// *, *::before, *::after {
-//   box-sizing: border-box;
-// }
+*, *::before, *::after {
+  box-sizing: inherit;
+}
 a {
   text-decoration: none;
 }
@@ -46,25 +47,65 @@ $sub-color: #adcc33;
 $baloon-color: #e6f0f0;
 $header-height: 70px;
 
-/* 各セクションのカラーや幅など */
-@mixin whole($backgroundColor, $sectionTitleColor, $section-height: 500px) {
+// 各セクションのカラーや幅など
+@mixin whole($backgroundColor, $sectionTitleColor, $section-height) {
     background-color: $backgroundColor;
     height: $section-height;
   & .section-title {
     color: $sectionTitleColor;
+    margin-top: 30px;
   }
 }
 
+.se-slope:nth-child(odd) {
+  @include whole($main-color, #fff, 650px);
+}
+
+.se-slope:nth-child(even) {
+  @include whole(#fff, $main-color, 700px);
+}
+
+// 各セクションの背景を斜めにする
+.se-container{
+    display: block;
+    width: 100%;
+    // overflow: hidden;
+    padding-top: 150px;
+    opacity: 1;
+    position: relative;
+    z-index: 1;
+}
+.se-slope {
+  // overflow: hidden;
+  margin: 0 -50px;
+  transform-origin: left center;
+}
 #about,
 #skills {
-  @include whole($main-color, #fff);
+  margin-top: -300px;
+  transform: rotate(5deg);
+  & > .wrapper {
+    transform: rotate(-5deg);
+  }
 }
-
 #portfolio,
 #contact {
-  @include whole(#fff, $main-color, 600px);
+  margin-top: -50px;
+  transform: rotate(-5deg);
+  & > .wrapper {
+    transform: rotate(5deg);
+  }
 }
-
+// Intersection Observer API用
+.observed > .wrapper {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 1.4s, transform 1.4s;
+}
+.observed > .wrapper.appear {
+  opacity: 1;
+  transform: translateY(0);
+}
 /* --------------------------------
  * HEADER
  * -------------------------------- */
@@ -116,7 +157,8 @@ $header-height: 70px;
   display: flex;
   justify-content: center;
   position: relative;
-  height: calc(100vh - 70px);
+  // height: calc(100vh - 70px);
+  height: calc(100vh + 100px);
 
   top: 0;
   left: 0;
@@ -126,12 +168,12 @@ $header-height: 70px;
 .home-title {
   /* font-family: 'Lobster', cursive; */
   font-family: 'Lemon', cursive;
-  font-size: 3.4rem;
-  line-height: 1.1;
+  font-size: calc(12.8vh - 9px);
+  line-height: 1;
   color: $main-color;
   position: absolute;
-  left: 10px;
-  top: 60%;
+  left: 40px;
+  top: calc(100vh - 38.4vh + 27px - 70px - 20px);
 }
 
 /* --------------------------------
@@ -143,7 +185,7 @@ $header-height: 70px;
 .about-picture {
   width: 300px;
   height: 300px;
-  // border-radius: 60% 5% 60% 5%;
+  border-radius: 50%;
 }
 .about-text {
 
@@ -153,7 +195,7 @@ $header-height: 70px;
  * -------------------------------- */
 
 .portfolio-contents {
-  width: 750px;
+  width: 728px;
   margin: 0 auto;
   position: relative;
   display: flex;
@@ -161,16 +203,16 @@ $header-height: 70px;
 }
 .portfolio-main {
   img {
-    width: 750px;
-    height: 300px;
+    width: 728px;
+    height: 450px;
     vertical-align: top;
   }
 }
 .portfolio-contents {
   nav {
-    width: 750px;
+    width: 728px;
     position: absolute;
-    top: 150px;
+    top: 225px;
     transform: translateY(-50%);
     ul{
       list-style: none;
@@ -214,50 +256,60 @@ ul > #next {
 }
 
 .baloon {
-  margin: 0 auto;
-  width: 750px;
-  background-color: $baloon-color;
+  position: relative;
+  margin: -173px auto 0 auto;
+  width: 728px;
+  height: 173px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
   position: relative;
   padding: 4px;
-  border: solid $baloon-color 2px;
-  &::before {
-    content: '';
-    position: absolute;
-    left: 20px;
-    top: -15px;
-    display: block;
-    width: 0;
-    height: 0;
-    border-right: 15px solid transparent;
-    border-bottom: 15px solid $baloon-color;
-    border-left: 15px solid transparent;
+  color: #fff;
+  font-size: 1rem;
+  & > span {
+    position:absolute;
+    bottom: 0;
   }
 }
 /* --------------------------------
 * SKILLS
 * -------------------------------- */
 
- .skills-container {
+ .skills-circles,
+ .skills-contents {
    display: flex;
+   flex-direction: row;
    justify-content: center;
- }
- .circle-2,
- .circle-1,
- .circle-3 {
-   background-color: #fff;
-   padding: 5%;
-   height: 300px;
-   width: 300px;
-   margin: 0 -10px;
    mix-blend-mode: multiply;
+ }
+ .circle,
+ .circle-content {
+   padding: 5%;
+   height: 250px;
+   width: 250px;
+   margin: 0 -10px;
+ }
+ .circle {
    border-radius: 60% 5% 60% 5%;
-   background: $main-color;
+   // mix-blend-mode: multiply;
+   background: rgba(255, 205, 29, 0.6);
+   transition: transform 1s;
  }
-
- @media (max-width: 600px) {
- body {
- flex-direction: column;
+ .skills-circles {
+   margin-top: -250px;
  }
+ .circle-content {
+  display: flex;
+  align-items: center;
+  justify-content: center
+  &-text {
+     margin: 0;
+   }
+ }
+ .circle:hover {
+   transform: scale(1.25, 1.25) rotate(15deg);
+   // .circle-content {
+   //   transform: scale(0.8, 0.8) rotate(-15deg);
+   // }
  }
 
 /* --------------------------------
@@ -266,7 +318,6 @@ ul > #next {
 #contact {
   background: url(images/contact_lemon.jpg) no-repeat center top/cover;
   min-height: calc(100vh - #{$header-height});
-  // min-height: calc(100vh - 70px);
 }
 
 form div {
@@ -311,15 +362,20 @@ input[type="submit"] {
       background: darken($main-color, 20%);
     }
 }
-footer {
-  position: absolute;
-  bottom: 10px;
-  padding: 26px 0;
-}
-footer p {
-  color: yellow;
-}
 
 /* --------------------------------
 * footer
 * -------------------------------- */
+footer {
+  background: $sub-color;
+  height: 9vw;
+  margin-top: -9vw;
+  position: relative;
+}
+footer p {
+  color: #fff;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

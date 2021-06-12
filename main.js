@@ -13,11 +13,14 @@
 		return false;
 	});
 
+
   // ポートフォリオのスライドショー
   const slideshowDatas = [
     ['images/portfolio1.jpg', "作品１についての説明です。"],
-    ['images/portfolio2.jpg', "作品２についての説明です。"],
-    ['images/portfolio3.jpg', "作品３についての説明です。"],
+    // ['images/portfolio2.jpg', "作品２についての説明です。"],
+    // ['images/portfolio3.jpg', "作品３についての説明です。"],
+    ['images/no_image.png', "作品２についての説明です。"],
+    ['images/no_image.png', "作品３についての説明です。"],
   ];
 
   let currentIndex = 0;
@@ -69,5 +72,29 @@
       target = slideshowDatas.length - 1;
     }
     thumbnails[target].click();
+  });
+
+
+
+  // Intersection Observerを使って
+  // 各セクションをふわっと表示
+  const targets = document.querySelectorAll('.observed  > .wrapper');
+
+  function callback(entries, obs) {
+    console.log(entries);
+    if(!entries[0].isIntersecting) {
+      return;
+    }
+    entries[0].target.classList.add('appear');
+    obs.unobserve(entries[0].target);
+  }
+
+  const options = {
+    threshold: 0.2,
+  }
+
+  const observer = new IntersectionObserver(callback, options);
+  targets.forEach(target => {
+    observer.observe(target);
   });
 }
